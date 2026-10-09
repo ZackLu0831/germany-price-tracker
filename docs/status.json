@@ -1,29 +1,51 @@
 {
-  "checked_at": "2026-10-09T14:36:31+00:00",
+  "checked_at": "2026-10-09T15:27:02+00:00",
   "groups": [
     {
-      "id": "huawei-watch-gt7-black",
-      "name": "Huawei Watch GT 7 46mm Black",
-      "enabled": true,
-      "target_price": 220,
+      "id": "p-93f3b98f246c48ffab7ef509",
+      "name": "huawei watch fit 4 black",
       "links": {
-        "mediamarkt": "https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html",
-        "amazon": "",
-        "otto": ""
-      }
+        "mediamarkt": "https://www.mediamarkt.de/de/product/_huawei-fit-4-smartwatch-fluorelastomer-130-210-mm-black-2987781.html",
+        "amazon": "https://www.amazon.de/dp/B0F29Y67ZR?th=1",
+        "otto": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/"
+      },
+      "enabled": true,
+      "target_price": null
     }
   ],
   "products": [
     {
-      "id": "huawei-watch-gt7-black__mediamarkt",
-      "group_id": "huawei-watch-gt7-black",
+      "id": "p-93f3b98f246c48ffab7ef509__mediamarkt",
+      "group_id": "p-93f3b98f246c48ffab7ef509",
       "shop": "mediamarkt",
-      "name": "Huawei Watch GT 7 46mm Black",
-      "url": "https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html",
-      "target_price": 220,
+      "name": "huawei watch fit 4 black",
+      "url": "https://www.mediamarkt.de/de/product/_huawei-fit-4-smartwatch-fluorelastomer-130-210-mm-black-2987781.html",
+      "target_price": null,
       "enabled": true,
       "status": "error",
-      "error": "403 Client Error: Forbidden for url: https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html"
+      "error": "403 Client Error: Forbidden for url: https://www.mediamarkt.de/de/product/_huawei-fit-4-smartwatch-fluorelastomer-130-210-mm-black-2987781.html"
+    },
+    {
+      "id": "p-93f3b98f246c48ffab7ef509__amazon",
+      "group_id": "p-93f3b98f246c48ffab7ef509",
+      "shop": "amazon",
+      "name": "huawei watch fit 4 black",
+      "url": "https://www.amazon.de/dp/B0F29Y67ZR?th=1",
+      "target_price": null,
+      "enabled": true,
+      "status": "error",
+      "error": "amazon_buybox_missing"
+    },
+    {
+      "id": "p-93f3b98f246c48ffab7ef509__otto",
+      "group_id": "p-93f3b98f246c48ffab7ef509",
+      "shop": "otto",
+      "name": "huawei watch fit 4 black",
+      "url": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/",
+      "target_price": null,
+      "enabled": true,
+      "status": "error",
+      "error": "400 Client Error: Bad Request for url: https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit"
     }
   ]
 }
