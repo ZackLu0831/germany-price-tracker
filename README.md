@@ -23,3 +23,10 @@
 
 ### Amazon 自营 Buy Box 限制
 Amazon.de 仅记录主 Buy Box 中明确标注 Amazon 自营销售的报价；FBA 第三方、无法确认卖家、翻新商品不计入价格曲线。抓取器采用保守策略，Amazon 页面结构变化时可能出现 `seller_unverified` / `amazon_buybox_missing`，不会回退到页面其他报价。此解析器仅通过模拟 HTML 单元测试，尚未在 Amazon.de 实际网页验证；不保证可穿透反爬虫或覆盖所有页面布局。
+
+
+## GitHub Pages 商品管理（无外部服务）
+
+打开 `https://USERNAME.github.io/REPOSITORY/admin.html`，在网页添加/编辑/暂停/删除商品，点击“复制 products.json”，再点击“打开 GitHub 编辑页”，替换文件内容并 Commit changes。无需 GitHub Token；网页本身不直接写入仓库。此方式适用于默认分支 `main`，且仓库名需与 Pages URL 一致。最多100件商品，每件最多3个链接。
+
+注意：公开仓库中的配置和历史价格对所有人可见。GitHub Pages 静态网页不能独立提供安全的写入接口。
