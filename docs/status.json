@@ -8,8 +8,8 @@
       "target_price": 220,
       "links": {
         "mediamarkt": "https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html",
-        "amazon": "",
-        "otto": ""
+        "amazon": "https://www.amazon.de/dp/B0F29Y67ZR",
+        "otto": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/"
       }
     }
   ],
