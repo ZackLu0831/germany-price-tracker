@@ -1,32 +1,98 @@
-# 德国三平台商品价格监控（MediaMarkt / Amazon.de / OTTO.de）
+# 德国三平台价格监控：GitHub + Cloudflare Workers
 
-## 配置商品
-修改 `products.json`，每个商品包含 `id`、`name`、`target_price` 和 `links`，`links` 可填写三个商家的 HTTPS 商品页面 URL，留空代表不监控。可增加任意数量的商品对象；每个商品 ID 必须唯一且只能用英文字母、数字、下划线、横线。示例已经加入 Huawei Watch GT 7 的 MediaMarkt 链接。
+**版本：2026-10-09**。最多100件商品、每件最多三个链接；GitHub Actions 计划每小时运行，GitHub Pages 显示7/30/90天价格曲线；Cloudflare Worker 提供经 GitHub 登录的管理网页和保存接口。
 
-## 部署
-1. 创建 GitHub 仓库（GitHub Pages 免费使用公开仓库）。将本压缩包内 `mm-tracker` 文件夹的**内容**上传至仓库根目录，确保 `.github/workflows/monitor.yml` 存在。
-2. Settings → Actions → General → Workflow permissions 选择 Read and write permissions。
-3. Actions → Monitor German shop prices → Run workflow 手动运行一次。
-4. Settings → Pages → Deploy from a branch → main /docs → Save。随后访问 GitHub 提供的 Pages 地址。
-5. 每小时约第 17 分钟会触发一次（GitHub 可能延迟或跳过）。在 `products.json` 中修改或新增商品后提交即可。
+## 架构与安全
 
-## 数据与限制
-每次运行将有效价格写入 `data/prices.sqlite3` 和 `docs/prices.csv`，状态写入 `docs/status.json`。GitHub Pages 提供按商品的三平台价格曲线与 CSV 下载。历史从开始运行后累积，不能回溯。商品价格提取基于 JSON-LD/HTML meta，不保证 MediaMarkt、Amazon、OTTO 每个页面都可用；反爬虫、地区、登录、Cookie、优惠券、配送费和第三方卖家会影响价格。特别是 Amazon/OTTO 可能提供多个卖家/商品状态：**当前通用提取器无法保证提取的是全新自营价格**，正式决策前请与商品页人工核对。不要绕过访问限制。
+- `docs/index.html`：GitHub Pages 的公开价格曲线。
+- `worker/index.js` + `docs/admin.html`：Worker 同源提供管理页面（在 **Worker 地址** `/admin.html` 打开，**不要**使用 GitHub Pages 的 `/admin.html`）。
+- GitHub OAuth App 仅请求 `read:user`，用于验证 GitHub 登录用户名；真正写仓库的是 Cloudflare Secret 中的细粒度 GitHub Token，仅授予目标仓库 Contents: Read and write。
+- 登录会话为 AES-GCM 加密 HttpOnly/Secure/SameSite=Lax Cookie；写入请求验证 CSRF token 和仓库文件 SHA，避免覆盖其他编辑。不要把 Token 写进公开仓库或网页。
+- `products.json` 公开可见；不要在商品名称或 URL 中放个人信息。
 
-## 本地测试
-`pip install -r requirements.txt` 然后 `python tracker.py`。
+## A. 上传到 GitHub
 
-## 100 商品与时间区间
-最多 100 个商品组，每组可配置 MediaMarkt、Amazon、OTTO 三条链接，共最多 300 条。网页提供过去 7、30、90 天切换，分别计算各平台的最低、最高、平均价格以及所选区间内首末记录的涨跌额和涨跌幅。区间内无数据时不推测价格。所有历史数据继续保留。
+1. 新建或使用已有 Public 仓库，建议仓库名 `germany-price-tracker`。
+2. 上传 ZIP **解压后的全部文件**（包括隐藏 `.github/workflows/monitor.yml`）。不要把 ZIP 作为单个文件上传。
+3. 在仓库 **Settings → Actions → General → Workflow permissions** 允许 `Read and write permissions`（工作流中也声明了 `contents: write`）。
+4. **Settings → Pages → Build and deployment**：Deploy from a branch，选 `main` + `/docs`。
+5. 在 **Actions → Monitor German shop prices → Run workflow** 手动运行一次。工作流会生成/更新 `data/prices.sqlite3`、`docs/prices.csv`、`docs/status.json`。
+6. 仪表盘地址：`https://GITHUB_USERNAME.github.io/germany-price-tracker/`（若仓库名不同则调整路径）。
 
-**规模提醒**：300 个链接每小时抓取，当前每链接请求最长 25 秒并暂停 2 秒，极端情况下运行时间较长，GitHub Actions 免费额度、仓库体积及站点访问限制均可能成为瓶颈。不要保证 300 条链接能每小时全部成功。公开 GitHub Pages 会公开监控清单和价格历史。
+## B. 创建 GitHub OAuth App
 
-### Amazon 自营 Buy Box 限制
-Amazon.de 仅记录主 Buy Box 中明确标注 Amazon 自营销售的报价；FBA 第三方、无法确认卖家、翻新商品不计入价格曲线。抓取器采用保守策略，Amazon 页面结构变化时可能出现 `seller_unverified` / `amazon_buybox_missing`，不会回退到页面其他报价。此解析器仅通过模拟 HTML 单元测试，尚未在 Amazon.de 实际网页验证；不保证可穿透反爬虫或覆盖所有页面布局。
+1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App。
+2. Application name：`Germany Price Tracker Admin`。
+3. Homepage URL：填你的 Worker 网址，例如 `https://germany-price-tracker-api.YOUR_SUBDOMAIN.workers.dev`。
+4. Authorization callback URL：`https://germany-price-tracker-api.YOUR_SUBDOMAIN.workers.dev/auth/callback`。
+5. 保存 Client ID，并生成 Client Secret。两者不要混淆。
 
+## C. 创建 GitHub 细粒度 Token
 
-## GitHub Pages 商品管理（无外部服务）
+GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token。
 
-打开 `https://USERNAME.github.io/REPOSITORY/admin.html`，在网页添加/编辑/暂停/删除商品，点击“复制 products.json”，再点击“打开 GitHub 编辑页”，替换文件内容并 Commit changes。无需 GitHub Token；网页本身不直接写入仓库。此方式适用于默认分支 `main`，且仓库名需与 Pages URL 一致。最多100件商品，每件最多3个链接。
+- Resource owner：你自己的 GitHub 用户。
+- Repository access：Only select repositories → 仅选择 `germany-price-tracker`。
+- Repository permissions：**Contents: Read and write**，Metadata: Read（自动）。
+- 设定有效期，过期后需要更新 Worker Secret。
+- 复制 Token，切勿提交到 GitHub 仓库。
 
-注意：公开仓库中的配置和历史价格对所有人可见。GitHub Pages 静态网页不能独立提供安全的写入接口。
+## D. 部署 Cloudflare Worker
+
+1. 注册/登录 Cloudflare 免费账户；在电脑安装 Node.js 20+。
+2. 打开终端，进入解压文件夹的 `worker` 子目录：
+
+   ```bash
+   cd worker
+   npx wrangler login
+   ```
+
+3. 编辑 `worker/wrangler.toml` 中：
+
+   - `GITHUB_OWNER`：你的 GitHub 用户名
+   - `GITHUB_REPO`：仓库名称
+   - `ALLOWED_GITHUB_LOGIN`：唯一允许管理的 GitHub 用户名
+   - `PAGES_ORIGIN`：`https://你的用户名.github.io`（**不带仓库路径**）
+   - `GITHUB_CLIENT_ID`：OAuth App 的 Client ID
+
+4. 编辑 `docs/worker-config.js` 中的公开价格网页地址。
+5. 在 `worker` 文件夹执行以下命令，按提示分别粘贴私密值：
+
+   ```bash
+   npx wrangler secret put GITHUB_CLIENT_SECRET
+   npx wrangler secret put GITHUB_REPO_TOKEN
+   npx wrangler secret put SESSION_SECRET
+   ```
+
+   `SESSION_SECRET` 使用至少32位随机字符串。首次使用前先运行一次 `npx wrangler deploy` 创建 Worker；若提示 Worker 不存在，先 deploy，再执行以上 secret 命令，最后再次 deploy。
+
+6. 部署：
+
+   ```bash
+   npx wrangler deploy
+   ```
+
+7. 将 Worker 真实网址填写到 `docs/index.html` 中“管理商品”链接（替换 `https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev/admin.html`），提交到 GitHub。
+8. 核对 GitHub OAuth App 的 Homepage/Callback URL 与部署后 Worker 的**实际**网址完全一致。若不一致，返回 OAuth App 设置修改。
+9. 打开 `https://你的Worker地址/admin.html`，点击 GitHub 登录，然后添加商品、点击“保存全部修改到 GitHub”。
+
+**注意**：Worker 使用 `docs` 文件夹作为静态资源目录，因此 Cloudflare 管理页面和 GitHub Pages 共享同一份 `docs/admin.html`，但管理操作应始终从 Worker 地址打开。iPhone Safari 对第三方 Cookie 限制较严格，此方案通过 Worker 同源管理避免该问题。
+
+## E. 数据与限制
+
+- GitHub Actions 的 `cron: '17 * * * *'` 是计划任务，不保证准点，Public 仓库长期无活动可能被 GitHub 停用计划任务。
+- 最多300条链接，单次运行可能因请求时间、反爬限制或 GitHub Actions 配额而无法全部成功；请观察日志并考虑分批。
+- Amazon 只尝试抓取主 Buy Box 且卖家明确为 Amazon 的全新商品；卖家不明、第三方、翻新均不计入历史。MediaMarkt/OTTO 自营验证仍待增强。
+- 三个平台可能有反爬虫、地区、登录、优惠券或动态价格，实际抓取并未在真实页面端到端验证。请核对价格后再依赖结果。
+- CSV 和 SQLite 均提交到 GitHub。高频、长年数据可能让 Git 仓库膨胀；适合小规模个人使用，300链接长期运行建议后续转到数据库存储。
+- 所有价格历史从首次成功采集开始；不能自动补齐过去90天。
+- Worker 写入有版本冲突保护。若保存时遇到冲突，刷新后重新编辑。
+
+## 排错
+
+- GitHub Actions 不出现：检查 `.github/workflows/monitor.yml` 是否在默认分支。
+- Worker 登录回调失败：检查 OAuth App callback URL、Client ID、Secret、Worker 域名。
+- `not_authenticated`：请从 Worker 的 `/admin.html` 登录，不要从 GitHub Pages 的 `/admin.html` 操作。
+- `GitHub API 403`：检查细粒度 Token 的仓库范围、Contents 权限、是否过期。
+- `GitHub API 409/422`：文件被其他操作修改，刷新页面再保存。
+- 价格为空：检查 `docs/status.json` 的错误信息与 Actions 日志。

@@ -1,0 +1,18 @@
+name = "germany-price-tracker-api"
+main = "index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+GITHUB_OWNER = "CHANGE_ME"
+GITHUB_REPO = "germany-price-tracker"
+ALLOWED_GITHUB_LOGIN = "CHANGE_ME"
+PAGES_ORIGIN = "https://CHANGE_ME.github.io"
+GITHUB_CLIENT_ID = "CHANGE_ME"
+# Add secrets via: npx wrangler secret put GITHUB_CLIENT_SECRET
+#                  npx wrangler secret put GITHUB_REPO_TOKEN
+#                  npx wrangler secret put SESSION_SECRET
+
+[assets]
+directory = "../docs"
+binding = "ASSETS"
+run_worker_first = true
