@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-09T09:21:12+00:00",
+  "checked_at": "2026-10-09T09:33:38+00:00",
   "groups": [
     {
       "id": "huawei-watch-gt7-black",
@@ -8,8 +8,8 @@
       "target_price": 220,
       "links": {
         "mediamarkt": "https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html",
-        "amazon": "",
-        "otto": ""
+        "amazon": "https://www.amazon.de/dp/B0F29Y67ZR",
+        "otto": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/"
       }
     }
   ],
@@ -24,6 +24,28 @@
       "enabled": true,
       "status": "error",
       "error": "403 Client Error: Forbidden for url: https://www.mediamarkt.de/de/product/_huawei-watch-gt-7-46mm-black-fl-atum-b39f-3067336.html"
+    },
+    {
+      "id": "huawei-watch-gt7-black__amazon",
+      "group_id": "huawei-watch-gt7-black",
+      "shop": "amazon",
+      "name": "Huawei Watch GT 7 46mm Black",
+      "url": "https://www.amazon.de/dp/B0F29Y67ZR",
+      "target_price": 220,
+      "enabled": true,
+      "status": "error",
+      "error": "amazon_buybox_missing"
+    },
+    {
+      "id": "huawei-watch-gt7-black__otto",
+      "group_id": "huawei-watch-gt7-black",
+      "shop": "otto",
+      "name": "Huawei Watch GT 7 46mm Black",
+      "url": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/",
+      "target_price": 220,
+      "enabled": true,
+      "status": "error",
+      "error": "400 Client Error: Bad Request for url: https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit"
     }
   ]
 }
