@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-12T06:43:59+00:00",
+  "checked_at": "2026-10-12T07:38:06+00:00",
   "groups": [
     {
       "id": "p-93f3b98f246c48ffab7ef509",
@@ -34,7 +34,7 @@
       "target_price": null,
       "enabled": true,
       "status": "error",
-      "error": "seller_unverified"
+      "error": "amazon_buybox_missing"
     },
     {
       "id": "p-93f3b98f246c48ffab7ef509__otto",
