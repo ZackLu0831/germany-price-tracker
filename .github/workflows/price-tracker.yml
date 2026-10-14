@@ -1,33 +1,63 @@
-name: Monitor German shop prices
+name: Germany Price Tracker
 on:
   schedule:
-    - cron: '17 * * * *'
+    - cron: '13 * * * *'
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'products.json'
+      - 'src/tracker.py'
+      - 'requirements.txt'
 permissions:
   contents: write
+  pages: write
+  id-token: write
 concurrency:
-  group: german-shop-monitor
+  group: germany-price-tracker
   cancel-in-progress: false
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: true
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          cache: pip
+          cache: 'pip'
       - run: pip install -r requirements.txt
-      - run: python tracker.py
-      - name: Commit price history
+      - name: Collect prices
+        id: collect
+        continue-on-error: true
+        run: python src/tracker.py
+      - name: Commit data and diagnostics
+        if: always()
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/prices.sqlite3 docs/prices.csv docs/status.json
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/data/products.json docs/data/latest.json docs/data/history.json
           if ! git diff --cached --quiet; then
-            git commit -m "Update shop price history"
-            git pull --rebase origin "${GITHUB_REF_NAME}"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git commit -m 'Update price history and diagnostics [skip ci]'
+            git push
           fi
+      - name: Configure GitHub Pages
+        if: always()
+        uses: actions/configure-pages@v5
+      - name: Upload website
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - name: Deploy website
+        if: always()
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Report scrape failures
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo 'Price collection failed; see Collect prices logs and docs/data/latest.json' >&2
+          exit 1
