@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-15T17:37:59+00:00",
+  "generated_at": "2026-10-15T18:46:25+00:00",
   "attempted": 3,
   "succeeded": 0,
   "results": [
     {
-      "time": "2026-10-15T17:37:59+00:00",
+      "time": "2026-10-15T18:46:25+00:00",
       "product_id": "huawei-watch-fit-4-black",
       "shop": "mediamarkt",
       "url": "https://www.mediamarkt.de/de/product/_huawei-fit-4-smartwatch-fluorelastomer-130-210-mm-black-2987781.html",
@@ -13,7 +13,7 @@
       "error": "HTTP 403 (possible anti-bot/rate limit)"
     },
     {
-      "time": "2026-10-15T17:37:59+00:00",
+      "time": "2026-10-15T18:46:25+00:00",
       "product_id": "huawei-watch-fit-4-black",
       "shop": "amazon",
       "url": "https://www.amazon.de/dp/B0F29Y67ZR",
@@ -22,7 +22,7 @@
       "error": "anti-bot/challenge page"
     },
     {
-      "time": "2026-10-15T17:37:59+00:00",
+      "time": "2026-10-15T18:46:25+00:00",
       "product_id": "huawei-watch-fit-4-black",
       "shop": "otto",
       "url": "https://www.otto.de/p/huawei-watch-fit-4-fitness-tracker-smartwatch-4-6-cm-1-82-zoll-harmony-os-schlankes-design-erweiterte-sportmodi-bis-zu-10-tage-akkulaufzeit-C1976084061/?variationId=1976084062#",
